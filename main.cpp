@@ -18,6 +18,7 @@ volatile int last;
 bool nextRight = false;
 bool nextLeft = false;
 double length = 0;
+double pingRec = 0;
 
 /**
  * Macros for setting console flow control.
@@ -79,15 +80,17 @@ BBCarService_service car_control_service;
 
 
 
-Thread driveThread, encoderThread;
-EventQueue driveQueue, encoderQueue;
+Thread driveThread, encoderThread, pingThread;
+EventQueue driveQueue, encoderQueue, pingQueue;
 
 // DigitalInOut qti1(D3), qti2(D2), qti3(D1), qti4(D0);
 BufferedSerial pc(USBTX, USBRX);
 DigitalIn encoder(D11);
+DigitalInOut ping(D10);
 BusInOut qti(D9, D8, D7, D3);
 PwmOut pin5(D5), pin6(D6);
 
+Timer ping_timer;
 Ticker servo_ticker;
 Ticker encoder_ticker;
 
@@ -157,6 +160,26 @@ void drive() {
         // printf("qti: %d\n", rec);         
 }
 
+void pingScan() {
+    float val;
+    while(true) {
+        ping.output();
+        ping = 0; wait_us(200);
+        ping = 1; wait_us(5);
+        ping = 0; wait_us(5);
+
+        ping.input();
+        while(ping.read() == 0);
+        ping_timer.start();
+        while(ping.read() == 1);
+        val = ping_timer.read();
+        pingRec = val* 14500;
+        printf("Ping = %lf\r\n", pingRec);
+        ping_timer.stop();
+        ping_timer.reset();
+    }
+}
+
 int main() {
 
     pc.set_baud(9600);
@@ -167,13 +190,15 @@ int main() {
     // Thread
     driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
     encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
+    pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
     driveQueue.call_every(60ms, drive);
     encoderQueue.call_every(1ms, encoder_control);
+    pingQueue.call(pingScan);
 
 
-    
+
 
 
     // Initialize the rpc server
