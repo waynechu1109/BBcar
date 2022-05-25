@@ -12,6 +12,13 @@
 
 using namespace std::chrono;
 
+volatile int steps;
+volatile int last;
+
+bool nextRight = false;
+bool nextLeft = false;
+double length = 0;
+
 /**
  * Macros for setting console flow control.
  */
@@ -31,12 +38,14 @@ mbed::DigitalOut* leds[] = { &led1, &led2, &led3 };
 
 /****** erpc declarations *******/
 
+// GET DISTANCE TRAVELED
 void stop(uint8_t car){
     if(car == 1) { //there is only one car
           *leds[car - 1] = 0;
         // Uncomment for actual BB Car operations
         // (*cars[car -1]).stop();
-        printf("Car %d stop.\n", car);
+        // printf("Car %d stop.\n", car);
+        printf("Distance: %f\n", length);
   }
 }
 
@@ -84,17 +93,11 @@ Ticker encoder_ticker;
 
 BBCar car(pin5, pin6, servo_ticker);
 
-volatile int steps;
-volatile int last;
-
-bool nextRight = false;
-bool nextLeft = false;
-double length = 0;
-
 void encoder_control() {
    int value = encoder;
    if (!last && value) steps++;
    last = value;
+   length = steps * 10.31 * 3.14 / 32;
 //    printf("steps: %d\n", steps);
 //    printf("distance: %f\n", steps * 10.31 * 3.14 / 32);
 }
@@ -156,6 +159,23 @@ void drive() {
 
 int main() {
 
+    pc.set_baud(9600);
+
+    steps = 0;
+    last = 0;
+
+    // Thread
+    driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
+    encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
+
+    // EventQueue
+    driveQueue.call_every(60ms, drive);
+    encoderQueue.call_every(1ms, encoder_control);
+
+
+    
+
+
     // Initialize the rpc server
     uart_transport.setCrc16(&crc16);
 
@@ -181,17 +201,6 @@ int main() {
     printf("Running server.\n");
     rpc_server.run();
 
-    pc.set_baud(9600);
-
-    steps = 0;
-    last = 0;
-
-    // Thread
-    driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
-    encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
-
-    // EventQueue
-    driveQueue.call_every(60ms, drive);
-    encoderQueue.call_every(1ms, encoder_control);
+    
 }
 
