@@ -3,17 +3,36 @@
 #include <cstdio>
 using namespace std::chrono;
 
-Thread driveThread;
-EventQueue driveQueue;
+Thread driveThread, encoderThread;
+EventQueue driveQueue, encoderQueue;
 
 // DigitalInOut qti1(D3), qti2(D2), qti3(D1), qti4(D0);
+BufferedSerial pc(USBTX, USBRX);
+DigitalIn encoder(D11);
 BusInOut qti(D9, D8, D7, D3);
 PwmOut pin5(D5), pin6(D6);
+
 Ticker servo_ticker;
+Ticker encoder_ticker;
+
 BBCar car(pin5, pin6, servo_ticker);
+
+volatile int steps;
+volatile int last;
 
 bool nextRight = false;
 bool nextLeft = false;
+double length = 0;
+
+void encoder_control() {
+   int value = encoder;
+   if (!last && value) steps++;
+   last = value;
+//    printf("steps: %d\n", steps);
+   printf("distance: %f\n", steps * 10.31 * 3.14 / 32);
+}
+
+
 
 void drive() {
         qti.output();
@@ -66,7 +85,7 @@ void drive() {
         else if(qti == 0b0111) {nextLeft = true; car.goStraight(90./3); ThisThread::sleep_for(60ms);}
         else if(qti == 0b1110) {nextRight = true; car.goStraight(90./3); ThisThread::sleep_for(60ms);}     
 
-        printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
+        // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);         
 }
 
@@ -74,10 +93,17 @@ void drive() {
 // main() runs in its own thread in the OS
 int main() {
 
+    pc.set_baud(9600);
+
+    steps = 0;
+    last = 0;
+
     // Thread
     driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
+    encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
     driveQueue.call_every(60ms, drive);
+    encoderQueue.call_every(1ms, encoder_control);
 }
 
