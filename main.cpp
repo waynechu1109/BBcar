@@ -114,28 +114,24 @@ void drive() {
         // printf("qti: %d\n", (int)qti);
         int rec = qti;
 
-        // ThisThread::sleep_for(50ms);
-
         // printf("ping: %f\n", pingRec);
-        if(pingRec< 10) {
-            car.stop(); 
+        if(pingRec < 20 && !nextLeft && !nextRight) {   // if there's an obstacle
+            car.stop();                                 // and there's also no branch in front
             ThisThread::sleep_for(1000ms);
-            car.bigTurn(53, 0.4);            // uturn
+            car.bigTurn(53, 0.4);                       // uturn
             ThisThread::sleep_for(1700ms);
-            
-            
         }
         else if(qti == 0b0000) car.goStraight(-40);  // printf("back\n");
         
-        else if(qti == 0b0001) {car.turn(78./1.8, 0.4); ThisThread::sleep_for(55ms);}    // printf("sharp left\n");
-        else if(qti == 0b0011) {car.turn(70./1.8, 0.5); ThisThread::sleep_for(55ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(60./1.8, 0.7); ThisThread::sleep_for(55ms);}    // printf("gentle left\n");
-        else if(qti == 0b0110) {car.goStraight(90./1.8); ThisThread::sleep_for(55ms);}  // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(60./1.8, -0.7); ThisThread::sleep_for(55ms);}   // printf("gentle right\n");
-        else if(qti == 0b1100) {car.turn(70./1.8, -0.5); ThisThread::sleep_for(55ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(78./1.8, -0.4); ThisThread::sleep_for(55ms);}  // printf("sharp right\n");
+        else if(qti == 0b0001) {car.turn(78./1.8, 0.4); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
+        else if(qti == 0b0011) {car.turn(70./1.8, 0.5); ThisThread::sleep_for(50ms);}    // printf("medium left\n");
+        else if(qti == 0b0010) {car.turn(60./1.8, 0.7); ThisThread::sleep_for(50ms);}    // printf("gentle left\n");
+        else if(qti == 0b0110) {car.goStraight(90./1.8); ThisThread::sleep_for(50ms);}   // printf("straight\n");
+        else if(qti == 0b0100) {car.turn(60./1.8, -0.7); ThisThread::sleep_for(50ms);}   // printf("gentle right\n");
+        else if(qti == 0b1100) {car.turn(70./1.8, -0.5); ThisThread::sleep_for(50ms);}   // printf("medium right\n");
+        else if(qti == 0b1000) {car.turn(78./1.8, -0.4); ThisThread::sleep_for(50ms);}   // printf("sharp right\n");
         
-        // encoter the branch intersection
+        // encounter the branch intersection
         else if(qti == 0b1111) {
             if(nextLeft) {
                 // car.turn(85./3, 0.4); 
@@ -158,17 +154,24 @@ void drive() {
                 ThisThread::sleep_for(640ms);
                 nextRight = false;
             }
-            car.goStraight(90./1.8); ThisThread::sleep_for(55ms);       // printf("straight\n");
+            car.goStraight(90./1.8); ThisThread::sleep_for(50ms);       // printf("straight\n");
         }   
 
         // recognize turning pattern
-        else if(qti == 0b0111) {nextLeft = true; car.goStraight(90./3); ThisThread::sleep_for(55ms);}
-        else if(qti == 0b1110) {nextRight = true; car.goStraight(90./3); ThisThread::sleep_for(55ms);}     
+        else if(qti == 0b0111){
+            nextLeft = true; 
+            nextRight = false;          // make sure that the car won't get the double turn signs 
+            car.goStraight(90./3); 
+            ThisThread::sleep_for(50ms);
+        }
+        else if(qti == 0b1110){
+            nextRight = true;
+            nextLeft = false;           // make sure that the car won't get the double turn signs 
+            car.goStraight(90./3); 
+            ThisThread::sleep_for(50ms);
+        }      
 
-        // recognize the obstacle
-        // else if(pingRec < 10) {car.stop(); ThisThread::sleep_for(3000ms);} 
-
-        // else {car.goStraight(90./1.8); ThisThread::sleep_for(55ms);}
+        else {car.goStraight(90./1.8); ThisThread::sleep_for(50ms);}    // default: go straight
 
         // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);         
@@ -208,7 +211,7 @@ int main() {
     pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
-    driveQueue.call_every(55ms, drive);
+    driveQueue.call_every(50ms, drive);
     encoderQueue.call_every(1ms, encoder_control);
     pingQueue.call_every(10ms, pingScan);
 
