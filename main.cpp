@@ -79,9 +79,8 @@ erpc::SimpleServer rpc_server;
 BBCarService_service car_control_service;
 
 
-
-Thread driveThread, encoderThread, pingThread;
-EventQueue driveQueue, encoderQueue, pingQueue;
+Thread driveThread, encoderThread, pingThread, erpcThread;
+EventQueue driveQueue, encoderQueue, pingQueue, erpcQueue;
 
 // DigitalInOut qti1(D3), qti2(D2), qti3(D1), qti4(D0);
 BufferedSerial pc(USBTX, USBRX);
@@ -115,6 +114,8 @@ void drive() {
         int rec = qti;
 
         // printf("ping: %f\n", pingRec);
+
+
         if(pingRec < 20 && !nextLeft && !nextRight) {   // if there's an obstacle
             car.stop();                                 // and there's also no branch in front
             ThisThread::sleep_for(1000ms);
@@ -123,13 +124,13 @@ void drive() {
         }
         else if(qti == 0b0000) car.goStraight(-40);  // printf("back\n");
         
-        else if(qti == 0b0001) {car.turn(65./2, 0.4); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
-        else if(qti == 0b0011) {car.turn(60./2, 0.5); ThisThread::sleep_for(60ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(55./2, 0.7); ThisThread::sleep_for(60ms);}    // printf("gentle left\n");
-        else if(qti == 0b0110) {car.goStraight(85./2); ThisThread::sleep_for(60ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(55./2, -0.7); ThisThread::sleep_for(60ms);}   // printf("gentle right\n");
-        else if(qti == 0b1100) {car.turn(60./2, -0.5); ThisThread::sleep_for(60ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(65./2, -0.4); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
+        else if(qti == 0b0001) {car.turn(70./1.65, 0.47); ThisThread::sleep_for(57ms);}    // printf("sharp left\n");
+        else if(qti == 0b0011) {car.turn(65./1.65, 0.5); ThisThread::sleep_for(57ms);}    // printf("medium left\n");
+        else if(qti == 0b0010) {car.turn(65./1.65, 0.55); ThisThread::sleep_for(57ms);}    // printf("gentle left\n");
+        else if(qti == 0b0110) {car.goStraight(85./1.65); ThisThread::sleep_for(57ms);}   // printf("straight\n");
+        else if(qti == 0b0100) {car.turn(65./1.65, -0.55); ThisThread::sleep_for(57ms);}   // printf("gentle right\n");
+        else if(qti == 0b1100) {car.turn(65./1.65, -0.5); ThisThread::sleep_for(57ms);}   // printf("medium right\n");
+        else if(qti == 0b1000) {car.turn(70./1.65, -0.47); ThisThread::sleep_for(57ms);}   // printf("sharp right\n");
         
         // encounter the branch intersection
         else if(qti == 0b1111) {
@@ -137,7 +138,7 @@ void drive() {
                 // car.turn(85./3, 0.4); 
                 car.stop();
                 car.goStraight(-100);
-                ThisThread::sleep_for(60ms);
+                ThisThread::sleep_for(57ms);
                 // car.turn(85./3, 0.4);
                 car.bigTurn(70, 0.4);
                 ThisThread::sleep_for(640ms);
@@ -148,13 +149,13 @@ void drive() {
                 // car.turn(85./3, -0.4);
                 car.stop();
                 car.goStraight(-100);
-                ThisThread::sleep_for(60ms);
+                ThisThread::sleep_for(57ms);
                 // car.turn(85./3, -0.4);
-                car.bigTurn(55, -0.4);
+                car.bigTurn(70, -0.4);
                 ThisThread::sleep_for(550ms);
                 nextRight = false;
             }
-            car.goStraight(85./2); ThisThread::sleep_for(60ms);       // printf("straight\n");
+            car.goStraight(85./1.65); ThisThread::sleep_for(57ms);       // printf("straight\n");
         }   
 
         // recognize turning pattern
@@ -162,18 +163,18 @@ void drive() {
             nextLeft = true; 
             nextRight = false;          // make sure that the car won't get the double turn signs 
             car.goStraight(85./3); 
-            ThisThread::sleep_for(60ms);
+            ThisThread::sleep_for(57ms);
         }
         else if(qti == 0b1110){
             nextRight = true;
             nextLeft = false;           // make sure that the car won't get the double turn signs 
             car.goStraight(85./3); 
-            ThisThread::sleep_for(60ms);
+            ThisThread::sleep_for(57ms);
         }      
 
-        else {car.goStraight(85./2); ThisThread::sleep_for(60ms);}    // default: go straight
+        else {car.goStraight(85./1.65); ThisThread::sleep_for(57ms);}    // default: go straight
 
-        printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
+        // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);         
 }
 
@@ -197,6 +198,22 @@ void pingScan() {
     // }
 }
 
+void run_erpc() {
+    printf("Initializing server.\n");
+    rpc_server.setTransport(&uart_transport);
+    rpc_server.setCodecFactory(&basic_cf);
+    rpc_server.setMessageBufferFactory(&dynamic_mbf);
+
+
+    // Add the led service to the server
+    printf("Adding BBCar server.\n");
+    rpc_server.addService(&car_control_service);
+
+    // Run the server. This should never exit
+    printf("Running server.\n");
+    rpc_server.run();
+}
+
 
 int main() {
 
@@ -209,14 +226,12 @@ int main() {
     driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
     encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
     pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
+    // erpcThread.start(callback(&erpcQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
-    driveQueue.call_every(60ms, drive);
+    driveQueue.call_every(57ms, drive);
     encoderQueue.call_every(1ms, encoder_control);
     pingQueue.call_every(10ms, pingScan);
-
-
-
 
 
     // Initialize the rpc server
@@ -231,19 +246,7 @@ int main() {
   uart_transport.set_flow_control(mbed::SerialBase::RTSCTS, STDIO_UART_RTS, STDIO_UART_CTS);
 #endif
 
-    printf("Initializing server.\n");
-    rpc_server.setTransport(&uart_transport);
-    rpc_server.setCodecFactory(&basic_cf);
-    rpc_server.setMessageBufferFactory(&dynamic_mbf);
-
-    // Add the led service to the server
-    printf("Adding BBCar server.\n");
-    rpc_server.addService(&car_control_service);
-
-    // Run the server. This should never exit
-    printf("Running server.\n");
-    rpc_server.run();
-
-    
+    // erpcQueue.call(run_erpc);
+    erpcThread.start(run_erpc);
+        
 }
-
