@@ -46,7 +46,7 @@ void stop(uint8_t car){
         // Uncomment for actual BB Car operations
         // (*cars[car -1]).stop();
         // printf("Car %d stop.\n", car);
-        printf("Distance: %f\n", length);
+        printf("Distance: %f,Speed: \n", length);
   }
 }
 
@@ -245,14 +245,14 @@ int main() {
     driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
     // driveThread.start(drive);
     encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
-    pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
+    // pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
     // erpcThread.start(callback(&erpcQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
     driveQueue.call_every(60ms, drive);
     // driveQueue.call(drive);
     encoderQueue.call_every(1ms, encoder_control);
-    pingQueue.call_every(500ms, pingScan);
+    // pingQueue.call_every(500ms, pingScan);
 
 
     // Initialize the rpc server
