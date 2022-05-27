@@ -130,58 +130,54 @@ void drive() {
         // }
         if(qti == 0b0000) car.goStraight(-40);  // printf("back\n");
         
-        else if(qti == 0b0001) {car.turn(90./2.5, 0.47); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
-        else if(qti == 0b0011) {car.turn(80./2.5, 0.5); ThisThread::sleep_for(60ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(50./2.5, 0.55); ThisThread::sleep_for(60ms);}    // printf("gentle left\n");
-        else if(qti == 0b0110) {car.goStraight(90./2.5); ThisThread::sleep_for(60ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(50./2.5, -0.55); ThisThread::sleep_for(60ms);}   // printf("gentle right\n");
-        else if(qti == 0b1100) {car.turn(80./2.5, -0.5); ThisThread::sleep_for(60ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(90./2.5, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
+        else if(qti == 0b0001) {car.turn(90./2.135, 0.47); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
+        else if(qti == 0b0011) {car.turn(80./2.135, 0.5); ThisThread::sleep_for(60ms);}    // printf("medium left\n");
+        else if(qti == 0b0010) {car.turn(50./2.135, 0.55); ThisThread::sleep_for(60ms);}    // printf("gentle left\n");
+        else if(qti == 0b0110) {car.goStraight(90./2.135); ThisThread::sleep_for(60ms);}   // printf("straight\n");
+        else if(qti == 0b0100) {car.turn(50./2.135, -0.55); ThisThread::sleep_for(60ms);}   // printf("gentle right\n");
+        else if(qti == 0b1100) {car.turn(80./2.135, -0.5); ThisThread::sleep_for(60ms);}   // printf("medium right\n");
+        else if(qti == 0b1000) {car.turn(90./2.135, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
         
         // encounter the branch intersection
         else if(qti == 0b1111) {
             if(nextLeft) {
-                // car.turn(85./2.5, 0.4); 
+                // car.turn(85./2.135, 0.4); 
                 car.stop();
                 car.goStraight(-100);
                 ThisThread::sleep_for(60ms);
-                // car.turn(85./2.5, 0.4);
+                // car.turn(85./2.135, 0.4);
                 car.bigTurn(70, 0.4);
                 ThisThread::sleep_for(640ms);
-                nextLeft = false;
-
-                // clibrate to align with line
-                
+                nextLeft = false;                
             }
-
             if(nextRight) {
-                // car.turn(85./2.5, -0.4);
+                // car.turn(85./2.135, -0.4);
                 car.stop();
                 car.goStraight(-100);
                 ThisThread::sleep_for(60ms);
-                // car.turn(85./2.5, -0.4);
+                // car.turn(85./2.135, -0.4);
                 car.bigTurn(68, -0.4);
                 ThisThread::sleep_for(550ms);
                 nextRight = false;
             }
-            car.goStraight(90./2.5); ThisThread::sleep_for(60ms);       // printf("straight\n");
+            car.goStraight(90./2.135); ThisThread::sleep_for(60ms);       // printf("straight\n");
         }   
 
         // recognize turning pattern
         else if(qti == 0b0111){
             nextLeft = true; 
             nextRight = false;          // make sure that the car won't get the double turn signs 
-            car.goStraight(90./2.5); 
+            car.goStraight(90./2.135); 
             ThisThread::sleep_for(60ms);
         }
         else if(qti == 0b1110){
             nextRight = true;
             nextLeft = false;           // make sure that the car won't get the double turn signs 
-            car.goStraight(90./2.5); 
+            car.goStraight(90./2.135); 
             ThisThread::sleep_for(60ms);
         }      
 
-        else {car.goStraight(90./2.5); ThisThread::sleep_for(60ms);}    // default: go straight
+        else {car.goStraight(90./2.135); ThisThread::sleep_for(60ms);}    // default: go straight
 
         // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);    
