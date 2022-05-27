@@ -80,8 +80,10 @@ BBCarService_service car_control_service;
 
 
 Thread driveThread(osPriorityHigh);
-Thread pingThread(osPriorityHigh);
-Thread encoderThread, erpcThread;
+Thread pingThread;
+Thread encoderThread;
+Thread erpcThread(osPriorityHigh);
+
 EventQueue driveQueue, encoderQueue, pingQueue, erpcQueue;
 
 // DigitalInOut qti1(D3), qti2(D2), qti3(D1), qti4(D0);
@@ -211,7 +213,7 @@ void pingScan() {
             driveQueue.call(u_turn);                  // and there's also no branch in front
         }
 
-        // printf("Ping = %lf\r\n", pingRec);
+        printf("Ping = %lf\r\n", pingRec);
         ping_timer.stop();
         ping_timer.reset();
     // }
@@ -245,14 +247,14 @@ int main() {
     driveThread.start(callback(&driveQueue, &EventQueue::dispatch_forever));
     // driveThread.start(drive);
     encoderThread.start(callback(&encoderQueue, &EventQueue::dispatch_forever));
-    // pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
+    pingThread.start(callback(&pingQueue, &EventQueue::dispatch_forever));
     // erpcThread.start(callback(&erpcQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
     driveQueue.call_every(60ms, drive);
     // driveQueue.call(drive);
     encoderQueue.call_every(1ms, encoder_control);
-    // pingQueue.call_every(500ms, pingScan);
+    pingQueue.call_every(500ms, pingScan);
 
 
     // Initialize the rpc server
