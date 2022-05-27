@@ -33,11 +33,9 @@ def curses_main(w):
     the logical if not actual main function, called by curses.wrapper.
     """
 
-    w.addstr("----------------------------------\n")
-    w.addstr("| Use arrow keys to control car. |\n")
-    w.addstr("| s to get the current speed.    |\n")
-    w.addstr("| d to get the current distance. |\n")
-    w.addstr("---------------------------------\n")
+    w.addstr("-----------------------------------------------------\n")
+    w.addstr("| d to get the distance traveled and current speed. |\n")
+    w.addstr("-----------------------------------------------------\n")
     w.refresh()
 
     bbcar_control(w)
@@ -54,12 +52,9 @@ def bbcar_control(w):
 
          if char == ord('q'): break  # q
          elif char == ord('d'): 
-            w.addstr("Distance: ")
+            w.addstr("Distance traveled and current speed")
             w.refresh()
             client.stop(1)
-         elif char == ord('s'): 
-            w.addstr("Speed: ")
-            w.refresh()
 
       #   elif char == curses.KEY_RIGHT:
       #      w.addstr("Turn right.")

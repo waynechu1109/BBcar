@@ -19,6 +19,8 @@ bool nextRight = false;
 bool nextLeft = false;
 double length = 0;
 double pingRec = 0;
+int rec = 0;
+int speed = 0;
 
 /**
  * Macros for setting console flow control.
@@ -46,8 +48,19 @@ void stop(uint8_t car){
         // Uncomment for actual BB Car operations
         // (*cars[car -1]).stop();
         // printf("Car %d stop.\n", car);
-        printf("Distance: %f,Speed: \n", length);
-  }
+
+        if(rec == 0b0000) speed = -40;  // printf("back\n");
+        
+        else if(rec == 0b0001) speed = 90./ 2.135;   // printf("sharp left\n");
+        else if(rec == 0b0011) speed = 80./ 2.135;   // printf("medium left\n");
+        else if(rec == 0b0010) speed = 50./ 2.135;   // printf("gentle left\n");
+        else if(rec == 0b0110) speed = 90./ 2.135;   // printf("straight\n");
+        else if(rec == 0b0100) speed = 50./ 2.135;   // printf("gentle right\n");
+        else if(rec == 0b1100) speed = 80./ 2.135;   // printf("medium right\n");
+        else if(rec == 0b1000) speed = 90./ 2.135;   // printf("sharp right\n");
+
+        printf("Distance: %f cm, Speed: %d\n", length, speed);
+    }
 }
 
 void goStraight(uint8_t car, int32_t  speed){
@@ -117,7 +130,7 @@ void drive() {
         qti.input();
         wait_us(250);
         // printf("qti: %d\n", (int)qti);
-        int rec = qti;
+        rec = qti;
 
         // printf("ping: %f\n", pingRec);
 
@@ -231,7 +244,7 @@ void run_erpc() {
     rpc_server.addService(&car_control_service);
 
     // Run the server. This should never exit
-    printf("Running server.\n");
+    printf("Running server.\n\n");
     rpc_server.run();
 }
 
