@@ -20,7 +20,7 @@ bool nextLeft = false;
 double length = 0;
 double pingRec = 0;
 int rec = 0;
-int speed = 0;
+float speed = 0;
 
 /**
  * Macros for setting console flow control.
@@ -59,7 +59,7 @@ void stop(uint8_t car){
         else if(rec == 0b1100) speed = 80./ 2.135;   // printf("medium right\n");
         else if(rec == 0b1000) speed = 90./ 2.135;   // printf("sharp right\n");
 
-        printf("Distance: %f cm, Speed: %d\n", length, speed);
+        printf("Distance: %f cm, Speed: %f\n", length, speed);
     }
 }
 
@@ -101,10 +101,10 @@ EventQueue driveQueue, encoderQueue, pingQueue, erpcQueue;
 
 // DigitalInOut qti1(D3), qti2(D2), qti3(D1), qti4(D0);
 BufferedSerial pc(USBTX, USBRX);
-DigitalIn encoder(D11);
+DigitalIn encoder(D12);
 DigitalInOut ping(D10);
 BusInOut qti(D9, D8, D7, D3);
-PwmOut pin5(D5), pin6(D6);
+PwmOut pin5(D11), pin6(D13);
 
 Timer ping_timer;
 Ticker servo_ticker;
