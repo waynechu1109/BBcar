@@ -122,6 +122,14 @@ void encoder_control() {
 //    printf("distance: %f\n", steps * 10.31 * 3.14 / 32);
 }
 
+void u_turn() {
+    printf("obstacle in front\n");
+    car.stop();                                
+    ThisThread::sleep_for(1000ms);
+    car.bigTurn(48, 0.4);            // uturn
+    ThisThread::sleep_for(1757ms);
+}
+
 void drive() {
 
         if(chrono::duration_cast<chrono::seconds>(turnPattern_timer.elapsed_time()).count() > 5) {
@@ -144,15 +152,19 @@ void drive() {
         // printf("qti: %d\n", (int)qti);
         rec = qti;
 
-        if(qti == 0b0000) car.goStraight(-40);  // printf("back\n");
+        if(qti == 0b0000) {
+            // car.bigTurn(68, -0.4);
+            // ThisThread::sleep_for(550ms);
+            car.goStraight(-40);
+        }
         
-        else if(qti == 0b0001) {car.turn(90./2.135, 0.47); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
+        else if(qti == 0b0001) {car.turn(89./2.135, 0.47); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
         else if(qti == 0b0011) {car.turn(80./2.135, 0.5); ThisThread::sleep_for(60ms);}    // printf("medium left\n");
         else if(qti == 0b0010) {car.turn(50./2.135, 0.55); ThisThread::sleep_for(60ms);}    // printf("gentle left\n");
         else if(qti == 0b0110) {car.goStraight(90./2.135); ThisThread::sleep_for(60ms);}   // printf("straight\n");
         else if(qti == 0b0100) {car.turn(50./2.135, -0.55); ThisThread::sleep_for(60ms);}   // printf("gentle right\n");
         else if(qti == 0b1100) {car.turn(80./2.135, -0.5); ThisThread::sleep_for(60ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(87./2.135, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
+        else if(qti == 0b1000) {car.turn(86./2.135, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
         
         // encounter the branch intersection
         else if(qti == 0b1111) {
@@ -163,7 +175,8 @@ void drive() {
                 ThisThread::sleep_for(60ms);
                 // car.turn(85./2.135, 0.4);
                 car.bigTurn(70, 0.4);
-                ThisThread::sleep_for(640ms);
+                // car.turn(70, 0.001);
+                ThisThread::sleep_for(600ms);
                 nextLeft = false;                
             }
             if(nextRight) {
@@ -173,6 +186,7 @@ void drive() {
                 ThisThread::sleep_for(60ms);
                 // car.turn(85./2.135, -0.4);
                 car.bigTurn(68, -0.4);
+                // car.turn(68, -0.001);
                 ThisThread::sleep_for(550ms);
                 nextRight = false;
             }
@@ -202,14 +216,6 @@ void drive() {
         // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);    
     // }     
-}
-
-void u_turn() {
-    printf("obstacle in front\n");
-    car.stop();                                
-    ThisThread::sleep_for(1000ms);
-    car.bigTurn(48, 0.4);            // uturn
-    ThisThread::sleep_for(1757ms);
 }
 
 void pingScan() {
