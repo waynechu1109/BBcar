@@ -107,6 +107,7 @@ BusInOut qti(D9, D8, D7, D3);
 PwmOut pin5(D11), pin6(D13);
 
 Timer ping_timer;
+Timer turnPattern_timer;
 Ticker servo_ticker;
 Ticker encoder_ticker;
 
@@ -122,6 +123,17 @@ void encoder_control() {
 }
 
 void drive() {
+
+        if(chrono::duration_cast<chrono::seconds>(turnPattern_timer.elapsed_time()).count() > 5) {
+            // reset the turn pattern if no need to turn for a long time
+            nextLeft = false;
+            nextRight = false;  
+            turnPattern_timer.stop();
+            turnPattern_timer.reset(); 
+        }
+
+        // printf("Timer time: %llu s ", chrono::duration_cast<chrono::seconds>(turnPattern_timer.elapsed_time()).count());
+        // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
 
     // while(true) { 
         qti.output();
@@ -180,12 +192,16 @@ void drive() {
 
         // recognize turning pattern
         else if(qti == 0b0111){
+            turnPattern_timer.reset();
+            turnPattern_timer.start();  // start to record the time when the car recognize the turn pattern
             nextLeft = true; 
             nextRight = false;          // make sure that the car won't get the double turn signs 
             car.goStraight(90./2.135); 
             ThisThread::sleep_for(60ms);
         }
         else if(qti == 0b1110){
+            turnPattern_timer.reset();
+            turnPattern_timer.start();  // start to record the time when the car recognize the turn pattern
             nextRight = true;
             nextLeft = false;           // make sure that the car won't get the double turn signs 
             car.goStraight(90./2.135); 
@@ -226,7 +242,7 @@ void pingScan() {
             driveQueue.call(u_turn);                  // and there's also no branch in front
         }
 
-        printf("Ping = %lf\r\n", pingRec);
+        // printf("Ping = %lf\r\n", pingRec);
         ping_timer.stop();
         ping_timer.reset();
     // }
