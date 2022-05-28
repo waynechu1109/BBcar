@@ -51,13 +51,13 @@ void stop(uint8_t car){
 
         if(rec == 0b0000) speed = -40;  // printf("back\n");
         
-        else if(rec == 0b0001) speed = 90./ 2.135;   // printf("sharp left\n");
-        else if(rec == 0b0011) speed = 80./ 2.135;   // printf("medium left\n");
-        else if(rec == 0b0010) speed = 50./ 2.135;   // printf("gentle left\n");
-        else if(rec == 0b0110) speed = 90./ 2.135;   // printf("straight\n");
-        else if(rec == 0b0100) speed = 50./ 2.135;   // printf("gentle right\n");
-        else if(rec == 0b1100) speed = 80./ 2.135;   // printf("medium right\n");
-        else if(rec == 0b1000) speed = 90./ 2.135;   // printf("sharp right\n");
+        else if(rec == 0b0001) speed = 90./2.137;   // printf("sharp left\n");
+        else if(rec == 0b0011) speed = 80./2.137;   // printf("medium left\n");
+        else if(rec == 0b0010) speed = 50./2.137;   // printf("gentle left\n");
+        else if(rec == 0b0110) speed = 90./2.137;   // printf("straight\n");
+        else if(rec == 0b0100) speed = 50./2.137;   // printf("gentle right\n");
+        else if(rec == 0b1100) speed = 80./2.137;   // printf("medium right\n");
+        else if(rec == 0b1000) speed = 90./2.137;   // printf("sharp right\n");
 
         printf("Distance: %f cm, Speed: %f\n", length, speed);
     }
@@ -158,39 +158,39 @@ void drive() {
             car.goStraight(-40);
         }
         
-        else if(qti == 0b0001) {car.turn(89./2.135, 0.47); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
-        else if(qti == 0b0011) {car.turn(80./2.135, 0.5); ThisThread::sleep_for(60ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(50./2.135, 0.55); ThisThread::sleep_for(60ms);}    // printf("gentle left\n");
-        else if(qti == 0b0110) {car.goStraight(90./2.135); ThisThread::sleep_for(60ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(50./2.135, -0.55); ThisThread::sleep_for(60ms);}   // printf("gentle right\n");
-        else if(qti == 0b1100) {car.turn(80./2.135, -0.5); ThisThread::sleep_for(60ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(86./2.135, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
+        else if(qti == 0b0001) {car.turn(87./2.137, 0.47); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
+        else if(qti == 0b0011) {car.turn(80./2.137, 0.5); ThisThread::sleep_for(58ms);}    // printf("medium left\n");
+        else if(qti == 0b0010) {car.turn(50./2.137, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
+        else if(qti == 0b0110) {car.goStraight(90./2.137); ThisThread::sleep_for(58ms);}   // printf("straight\n");
+        else if(qti == 0b0100) {car.turn(50./2.137, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
+        else if(qti == 0b1100) {car.turn(80./2.137, -0.5); ThisThread::sleep_for(58ms);}   // printf("medium right\n");
+        else if(qti == 0b1000) {car.turn(80./2.137, -0.47); ThisThread::sleep_for(50ms);}   // printf("sharp right\n");
         
         // encounter the branch intersection
         else if(qti == 0b1111) {
             if(nextLeft) {
-                // car.turn(85./2.135, 0.4); 
+                // car.turn(85./2.137, 0.4); 
                 car.stop();
                 car.goStraight(-100);
-                ThisThread::sleep_for(60ms);
-                // car.turn(85./2.135, 0.4);
+                ThisThread::sleep_for(58ms);
+                // car.turn(85./2.137, 0.4);
                 car.bigTurn(70, 0.4);
                 // car.turn(70, 0.001);
                 ThisThread::sleep_for(600ms);
                 nextLeft = false;                
             }
             if(nextRight) {
-                // car.turn(85./2.135, -0.4);
+                // car.turn(85./2.137, -0.4);
                 car.stop();
                 car.goStraight(-100);
-                ThisThread::sleep_for(60ms);
-                // car.turn(85./2.135, -0.4);
+                ThisThread::sleep_for(58ms);
+                // car.turn(85./2.137, -0.4);
                 car.bigTurn(68, -0.4);
                 // car.turn(68, -0.001);
-                ThisThread::sleep_for(550ms);
+                ThisThread::sleep_for(545ms);
                 nextRight = false;
             }
-            car.goStraight(90./2.135); ThisThread::sleep_for(60ms);       // printf("straight\n");
+            car.goStraight(90./2.137); ThisThread::sleep_for(58ms);       // printf("straight\n");
         }   
 
         // recognize turning pattern
@@ -199,19 +199,19 @@ void drive() {
             turnPattern_timer.start();  // start to record the time when the car recognize the turn pattern
             nextLeft = true; 
             nextRight = false;          // make sure that the car won't get the double turn signs 
-            car.goStraight(90./2.135); 
-            ThisThread::sleep_for(60ms);
+            car.goStraight(90./2.137); 
+            ThisThread::sleep_for(58ms);
         }
         else if(qti == 0b1110){
             turnPattern_timer.reset();
             turnPattern_timer.start();  // start to record the time when the car recognize the turn pattern
             nextRight = true;
             nextLeft = false;           // make sure that the car won't get the double turn signs 
-            car.goStraight(90./2.135); 
-            ThisThread::sleep_for(60ms);
+            car.goStraight(90./2.137); 
+            ThisThread::sleep_for(58ms);
         }      
 
-        else {car.goStraight(90./2.135); ThisThread::sleep_for(60ms);}    // default: go straight
+        else {car.goStraight(90./2.137); ThisThread::sleep_for(58ms);}    // default: go straight
 
         // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);    
@@ -276,7 +276,7 @@ int main() {
     // erpcThread.start(callback(&erpcQueue, &EventQueue::dispatch_forever));
 
     // EventQueue
-    driveQueue.call_every(60ms, drive);
+    driveQueue.call_every(58ms, drive);
     // driveQueue.call(drive);
     encoderQueue.call_every(1ms, encoder_control);
     pingQueue.call_every(500ms, pingScan);
