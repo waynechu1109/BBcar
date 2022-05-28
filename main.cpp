@@ -144,17 +144,6 @@ void drive() {
         // printf("qti: %d\n", (int)qti);
         rec = qti;
 
-        // printf("ping: %f\n", pingRec);
-
-
-        // if(pingRec < 20 && !nextLeft && !nextRight) {   // if there's an obstacle
-        //     // printf("ping: %f\n", pingRec);
-        //     printf("obstacle in front\n");
-        //     car.stop();                                 // and there's also no branch in front
-        //     ThisThread::sleep_for(1000ms);
-        //     car.bigTurn(53, 0.4);                       // uturn
-        //     ThisThread::sleep_for(1700ms);
-        // }
         if(qti == 0b0000) car.goStraight(-40);  // printf("back\n");
         
         else if(qti == 0b0001) {car.turn(90./2.135, 0.47); ThisThread::sleep_for(60ms);}    // printf("sharp left\n");
@@ -163,7 +152,7 @@ void drive() {
         else if(qti == 0b0110) {car.goStraight(90./2.135); ThisThread::sleep_for(60ms);}   // printf("straight\n");
         else if(qti == 0b0100) {car.turn(50./2.135, -0.55); ThisThread::sleep_for(60ms);}   // printf("gentle right\n");
         else if(qti == 0b1100) {car.turn(80./2.135, -0.5); ThisThread::sleep_for(60ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(90./2.135, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
+        else if(qti == 0b1000) {car.turn(87./2.135, -0.47); ThisThread::sleep_for(60ms);}   // printf("sharp right\n");
         
         // encounter the branch intersection
         else if(qti == 0b1111) {
@@ -219,8 +208,8 @@ void u_turn() {
     printf("obstacle in front\n");
     car.stop();                                
     ThisThread::sleep_for(1000ms);
-    car.bigTurn(53, 0.4);                       // uturn
-    ThisThread::sleep_for(1700ms);
+    car.bigTurn(48, 0.4);            // uturn
+    ThisThread::sleep_for(1757ms);
 }
 
 void pingScan() {
@@ -238,11 +227,12 @@ void pingScan() {
         val = ping_timer.read();
         pingRec = val* 14500;
 
-        if(pingRec < 20 && !nextLeft && !nextRight) { // if there's an obstacle
-            driveQueue.call(u_turn);                  // and there's also no branch in front
+        if(pingRec < 20 && !nextLeft && !nextRight) { // if there's an obstacle and there's also no branch in front
+            driveQueue.call(u_turn);     
+            ThisThread::sleep_for(5000ms);             
         }
 
-        // printf("Ping = %lf\r\n", pingRec);
+        printf("Ping = %lf\r\n", pingRec);
         ping_timer.stop();
         ping_timer.reset();
     // }
