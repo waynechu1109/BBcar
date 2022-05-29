@@ -51,13 +51,13 @@ void stop(uint8_t car){
 
         if(rec == 0b0000) speed = -40;  // printf("back\n");
         
-        else if(rec == 0b0001) speed = 90./2.137;   // printf("sharp left\n");
-        else if(rec == 0b0011) speed = 80./2.137;   // printf("medium left\n");
-        else if(rec == 0b0010) speed = 50./2.137;   // printf("gentle left\n");
-        else if(rec == 0b0110) speed = 90./2.137;   // printf("straight\n");
-        else if(rec == 0b0100) speed = 50./2.137;   // printf("gentle right\n");
-        else if(rec == 0b1100) speed = 80./2.137;   // printf("medium right\n");
-        else if(rec == 0b1000) speed = 90./2.137;   // printf("sharp right\n");
+        else if(rec == 0b0001) speed = 90./2.5;   // printf("sharp left\n");
+        else if(rec == 0b0011) speed = 80./2.5;   // printf("medium left\n");
+        else if(rec == 0b0010) speed = 50./2.5;   // printf("gentle left\n");
+        else if(rec == 0b0110) speed = 90./2.5;   // printf("straight\n");
+        else if(rec == 0b0100) speed = 50./2.5;   // printf("gentle right\n");
+        else if(rec == 0b1100) speed = 80./2.5;   // printf("medium right\n");
+        else if(rec == 0b1000) speed = 90./2.5;   // printf("sharp right\n");
 
         printf("Distance: %f cm, Speed: %f\n", length, speed);
     }
@@ -128,11 +128,13 @@ void u_turn() {
     ThisThread::sleep_for(1000ms);
     car.bigTurn(48, 0.4);            // uturn
     ThisThread::sleep_for(1890ms);
+    nextLeft = false;
+    nextRight = false;  // after uturn, reset the turning status
 }
 
 void drive() {
 
-        if(chrono::duration_cast<chrono::seconds>(turnPattern_timer.elapsed_time()).count() > 5) {
+        if(chrono::duration_cast<chrono::seconds>(turnPattern_timer.elapsed_time()).count() > 3) {
             // reset the turn pattern if no need to turn for a long time
             nextLeft = false;
             nextRight = false;  
@@ -156,41 +158,44 @@ void drive() {
             // car.bigTurn(68, -0.4);
             // ThisThread::sleep_for(550ms);
             car.goStraight(-40);
+
+            // car.turn(87./2.5, -0.2);
+            // ThisThread::sleep_for(50ms);
         }
         
-        else if(qti == 0b0001) {car.turn(87./2.137, 0.47); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
-        else if(qti == 0b0011) {car.turn(80./2.137, 0.5); ThisThread::sleep_for(58ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(50./2.137, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
-        else if(qti == 0b0110) {car.goStraight(90./2.137); ThisThread::sleep_for(58ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(50./2.137, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
-        else if(qti == 0b1100) {car.turn(80./2.137, -0.5); ThisThread::sleep_for(58ms);}   // printf("medium right\n");
-        else if(qti == 0b1000) {car.turn(80./2.137, -0.47); ThisThread::sleep_for(50ms);}   // printf("sharp right\n");
+        else if(qti == 0b0001) {car.turn(85./2.5, 0.5); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
+        else if(qti == 0b0011) {car.turn(80./2.5, 0.5); ThisThread::sleep_for(58ms);}    // printf("medium left\n");
+        else if(qti == 0b0010) {car.turn(50./2.5, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
+        else if(qti == 0b0110) {car.goStraight(90./2.5); ThisThread::sleep_for(58ms);}   // printf("straight\n");
+        else if(qti == 0b0100) {car.turn(50./2.5, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
+        else if(qti == 0b1100) {car.turn(82./2.5, -0.5); ThisThread::sleep_for(58ms);}   // printf("medium right\n");
+        else if(qti == 0b1000) {car.turn(80./2.5, -0.5); ThisThread::sleep_for(45ms);}   // printf("sharp right\n");
         
         // encounter the branch intersection
         else if(qti == 0b1111) {
             if(nextLeft) {
-                // car.turn(85./2.137, 0.4); 
+                // car.turn(85./2.5, 0.4); 
                 car.stop();
                 car.goStraight(-100);
                 ThisThread::sleep_for(58ms);
-                // car.turn(85./2.137, 0.4);
+                // car.turn(85./2.5, 0.4);
                 car.bigTurn(70, 0.4);
                 // car.turn(70, 0.001);
                 ThisThread::sleep_for(600ms);
                 nextLeft = false;                
             }
             if(nextRight) {
-                // car.turn(85./2.137, -0.4);
+                // car.turn(85./2.5, -0.4);
                 car.stop();
                 car.goStraight(-100);
                 ThisThread::sleep_for(58ms);
-                // car.turn(85./2.137, -0.4);
+                // car.turn(85./2.5, -0.4);
                 car.bigTurn(55, -0.4);
                 // car.turn(68, -0.001);
                 ThisThread::sleep_for(530ms);
                 nextRight = false;
             }
-            car.goStraight(90./2.137); ThisThread::sleep_for(58ms);       // printf("straight\n");
+            car.goStraight(90./2.5); ThisThread::sleep_for(58ms);       // printf("straight\n");
         }   
 
         // recognize turning pattern
@@ -199,7 +204,7 @@ void drive() {
             turnPattern_timer.start();  // start to record the time when the car recognize the turn pattern
             nextLeft = true; 
             nextRight = false;          // make sure that the car won't get the double turn signs 
-            car.goStraight(90./2.137); 
+            car.goStraight(90./3); 
             ThisThread::sleep_for(58ms);
         }
         else if(qti == 0b1110){
@@ -207,11 +212,11 @@ void drive() {
             turnPattern_timer.start();  // start to record the time when the car recognize the turn pattern
             nextRight = true;
             nextLeft = false;           // make sure that the car won't get the double turn signs 
-            car.goStraight(90./2.137); 
+            car.goStraight(90./2.5); 
             ThisThread::sleep_for(58ms);
         }      
 
-        else {car.goStraight(90./2.137); ThisThread::sleep_for(58ms);}    // default: go straight
+        else {car.goStraight(90./3); ThisThread::sleep_for(58ms);}    // default: go straight
 
         // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);    
