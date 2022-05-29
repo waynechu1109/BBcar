@@ -127,7 +127,7 @@ void u_turn() {
     car.stop();                                
     ThisThread::sleep_for(1000ms);
     car.bigTurn(48, 0.4);            // uturn
-    ThisThread::sleep_for(1757ms);
+    ThisThread::sleep_for(1890ms);
 }
 
 void drive() {
@@ -185,9 +185,9 @@ void drive() {
                 car.goStraight(-100);
                 ThisThread::sleep_for(58ms);
                 // car.turn(85./2.137, -0.4);
-                car.bigTurn(68, -0.4);
+                car.bigTurn(55, -0.4);
                 // car.turn(68, -0.001);
-                ThisThread::sleep_for(545ms);
+                ThisThread::sleep_for(530ms);
                 nextRight = false;
             }
             car.goStraight(90./2.137); ThisThread::sleep_for(58ms);       // printf("straight\n");
