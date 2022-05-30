@@ -165,9 +165,9 @@ void drive() {
         
         else if(qti == 0b0001) {car.turn(85./2.5, 0.5); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
         else if(qti == 0b0011) {car.turn(80./2.5, 0.5); ThisThread::sleep_for(58ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(75./2.5, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
-        else if(qti == 0b0110) {car.goStraight(85./2.5); ThisThread::sleep_for(58ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(75./2.5, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
+        else if(qti == 0b0010) {car.turn(78./2.5, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
+        else if(qti == 0b0110) {car.goStraight(80./2.5); ThisThread::sleep_for(58ms);}   // printf("straight\n");
+        else if(qti == 0b0100) {car.turn(78./2.5, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
         else if(qti == 0b1100) {car.turn(82./2.5, -0.5); ThisThread::sleep_for(58ms);}   // printf("medium right\n");
         else if(qti == 0b1000) {car.turn(85./2.5, -0.5); ThisThread::sleep_for(50ms);}   // printf("sharp right\n");
         
