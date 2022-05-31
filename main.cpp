@@ -125,7 +125,7 @@ void encoder_control() {
 void u_turn() {
     printf("obstacle in front\n");
     car.stop();                                
-    ThisThread::sleep_for(1000ms);
+    // ThisThread::sleep_for(1000ms);
     car.bigTurn(48, 0.4);            // uturn
     ThisThread::sleep_for(2000ms);
     nextLeft = false;
@@ -165,9 +165,9 @@ void drive() {
         
         else if(qti == 0b0001) {car.turn(85./2.5, 0.5); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
         else if(qti == 0b0011) {car.turn(80./2.5, 0.5); ThisThread::sleep_for(58ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(78./2.5, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
+        else if(qti == 0b0010) {car.turn(80./2.5, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
         else if(qti == 0b0110) {car.goStraight(80./2.5); ThisThread::sleep_for(58ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(78./2.5, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
+        else if(qti == 0b0100) {car.turn(80./2.5, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
         else if(qti == 0b1100) {car.turn(82./2.5, -0.5); ThisThread::sleep_for(58ms);}   // printf("medium right\n");
         else if(qti == 0b1000) {car.turn(85./2.5, -0.5); ThisThread::sleep_for(50ms);}   // printf("sharp right\n");
         
@@ -192,7 +192,7 @@ void drive() {
                 // car.turn(85./2.5, -0.4);
                 // car.bigTurn(55, -0.4);
                 car.turn(55, -0.001);
-                ThisThread::sleep_for(1290ms);
+                ThisThread::sleep_for(1320ms);
                 nextRight = false;
             }
             car.goStraight(90./2.5); ThisThread::sleep_for(58ms);       // printf("straight\n");
@@ -216,7 +216,7 @@ void drive() {
             ThisThread::sleep_for(58ms);
         }      
 
-        else {car.goStraight(90./3); ThisThread::sleep_for(58ms);}    // default: go straight
+        else {car.goStraight(80./2.5); ThisThread::sleep_for(58ms);}    // default: go straight
 
         // printf("nextLeft: %d, nextRight: %d\n", nextLeft, nextRight); 
         // printf("qti: %d\n", rec);    
