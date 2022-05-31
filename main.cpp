@@ -51,13 +51,13 @@ void stop(uint8_t car){
 
         if(rec == 0b0000) speed = -40;  // printf("back\n");
         
-        else if(rec == 0b0001) speed = 90./2.5;   // printf("sharp left\n");
+        else if(rec == 0b0001) speed = 85./2.5;   // printf("sharp left\n");
         else if(rec == 0b0011) speed = 80./2.5;   // printf("medium left\n");
-        else if(rec == 0b0010) speed = 50./2.5;   // printf("gentle left\n");
-        else if(rec == 0b0110) speed = 90./2.5;   // printf("straight\n");
-        else if(rec == 0b0100) speed = 50./2.5;   // printf("gentle right\n");
+        else if(rec == 0b0010) speed = 80./2.5;   // printf("gentle left\n");
+        else if(rec == 0b0110) speed = 80./2.5;   // printf("straight\n");
+        else if(rec == 0b0100) speed = 80./2.5;   // printf("gentle right\n");
         else if(rec == 0b1100) speed = 80./2.5;   // printf("medium right\n");
-        else if(rec == 0b1000) speed = 90./2.5;   // printf("sharp right\n");
+        else if(rec == 0b1000) speed = 85./2.5;   // printf("sharp right\n");
 
         printf("Distance: %f cm, Speed: %f\n", length, speed);
     }
@@ -165,9 +165,9 @@ void drive() {
         
         else if(qti == 0b0001) {car.turn(85./2.5, 0.5); ThisThread::sleep_for(50ms);}    // printf("sharp left\n");
         else if(qti == 0b0011) {car.turn(80./2.5, 0.5); ThisThread::sleep_for(58ms);}    // printf("medium left\n");
-        else if(qti == 0b0010) {car.turn(80./2.5, 0.55); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
+        else if(qti == 0b0010) {car.turn(80./2.5, 0.7); ThisThread::sleep_for(58ms);}    // printf("gentle left\n");
         else if(qti == 0b0110) {car.goStraight(80./2.5); ThisThread::sleep_for(58ms);}   // printf("straight\n");
-        else if(qti == 0b0100) {car.turn(80./2.5, -0.55); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
+        else if(qti == 0b0100) {car.turn(80./2.5, -0.7); ThisThread::sleep_for(58ms);}   // printf("gentle right\n");
         else if(qti == 0b1100) {car.turn(82./2.5, -0.5); ThisThread::sleep_for(58ms);}   // printf("medium right\n");
         else if(qti == 0b1000) {car.turn(85./2.5, -0.5); ThisThread::sleep_for(50ms);}   // printf("sharp right\n");
         
@@ -192,7 +192,7 @@ void drive() {
                 // car.turn(85./2.5, -0.4);
                 // car.bigTurn(55, -0.4);
                 car.turn(55, -0.001);
-                ThisThread::sleep_for(1320ms);
+                ThisThread::sleep_for(1400ms);
                 nextRight = false;
             }
             car.goStraight(90./2.5); ThisThread::sleep_for(58ms);       // printf("straight\n");
