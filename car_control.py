@@ -34,6 +34,7 @@ def curses_main(w):
     """
 
     w.addstr("-----------------------------------------------------\n")
+    w.addstr("| q to quit.                                        |\n")
     w.addstr("| d to get the distance traveled and current speed. |\n")
     w.addstr("-----------------------------------------------------\n")
     w.refresh()
