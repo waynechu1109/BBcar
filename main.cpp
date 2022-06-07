@@ -181,7 +181,7 @@ void drive() {
                 // car.turn(85./2.5, 0.4);
                 // car.bigTurn(70, 0.4);
                 car.turn(70, 0.001);
-                ThisThread::sleep_for(1250ms);
+                ThisThread::sleep_for(1300ms);
                 nextLeft = false;                
             }
             if(nextRight) {
@@ -192,7 +192,7 @@ void drive() {
                 // car.turn(85./2.5, -0.4);
                 // car.bigTurn(55, -0.4);
                 car.turn(55, -0.001);
-                ThisThread::sleep_for(1400ms);
+                ThisThread::sleep_for(1450ms);
                 nextRight = false;
             }
             car.goStraight(90./2.5); ThisThread::sleep_for(58ms);       // printf("straight\n");
@@ -238,7 +238,7 @@ void pingScan() {
         val = ping_timer.read();
         pingRec = val* 14500;
 
-        if(pingRec < 20 && !nextLeft && !nextRight) { // if there's an obstacle and there's also no branch in front
+        if(pingRec < 30 && !nextLeft && !nextRight) { // if there's an obstacle and there's also no branch in front
             driveQueue.call(u_turn);     
             ThisThread::sleep_for(5000ms);             
         }
